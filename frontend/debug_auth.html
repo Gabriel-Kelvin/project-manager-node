@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Debug</title>
+</head>
+<body>
+    <h1>Authentication Debug</h1>
+    <div id="status"></div>
+    <button onclick="testLogin()">Test Login</button>
+    <button onclick="testSignup()">Test Signup</button>
+    <button onclick="checkAuth()">Check Auth State</button>
+    <button onclick="clearAuth()">Clear Auth</button>
+    
+    <script>
+        const API_URL = 'http://localhost:8000';
+        
+        function updateStatus(message) {
+            document.getElementById('status').innerHTML += '<p>' + message + '</p>';
+        }
+        
+        async function testLogin() {
+            try {
+                updateStatus('Testing login...');
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: 'testuser',
+                        password: 'password123'
+                    })
+                });
+                
+                const data = await response.json();
+                updateStatus(`Login response: ${JSON.stringify(data)}`);
+                
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    updateStatus('Token and user stored in localStorage');
+                }
+            } catch (error) {
+                updateStatus(`Login error: ${error.message}`);
+            }
+        }
+        
+        async function testSignup() {
+            try {
+                updateStatus('Testing signup...');
+                const response = await fetch(`${API_URL}/auth/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: 'testuser2',
+                        password: 'password123',
+                        email: 'test2@example.com'
+                    })
+                });
+                
+                const data = await response.json();
+                updateStatus(`Signup response: ${JSON.stringify(data)}`);
+            } catch (error) {
+                updateStatus(`Signup error: ${error.message}`);
+            }
+        }
+        
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            updateStatus(`Token: ${token ? 'Present' : 'Missing'}`);
+            updateStatus(`User: ${user ? 'Present' : 'Missing'}`);
+            if (user) {
+                updateStatus(`User data: ${user}`);
+            }
+        }
+        
+        function clearAuth() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            updateStatus('Auth data cleared');
+        }
+    </script>
+</body>
+</html>

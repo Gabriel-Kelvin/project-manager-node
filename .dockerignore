@@ -1,0 +1,17 @@
+node_modules
+venv
+__pycache__
+*.pyc
+*.log
+.env
+.env.local
+.env.*.local
+.git
+.gitignore
+.DS_Store
+*.md
+backend/
+logs/
+.vscode
+.idea
+

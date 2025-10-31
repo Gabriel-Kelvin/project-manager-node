@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects API Test</title>
+</head>
+<body>
+    <h1>Projects API Test</h1>
+    <div id="status"></div>
+    <button onclick="testProjects()">Test Projects API</button>
+    <button onclick="testLogin()">Test Login First</button>
+    
+    <script>
+        const API_URL = 'http://localhost:8000';
+        let token = null;
+        
+        function updateStatus(message) {
+            document.getElementById('status').innerHTML += '<p>' + message + '</p>';
+        }
+        
+        async function testLogin() {
+            try {
+                updateStatus('Testing login...');
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: 'testuser',
+                        password: 'password123'
+                    })
+                });
+                
+                const data = await response.json();
+                updateStatus(`Login response: ${JSON.stringify(data)}`);
+                
+                if (data.token) {
+                    token = data.token;
+                    updateStatus('Token stored for API calls');
+                }
+            } catch (error) {
+                updateStatus(`Login error: ${error.message}`);
+            }
+        }
+        
+        async function testProjects() {
+            if (!token) {
+                updateStatus('Please login first!');
+                return;
+            }
+            
+            try {
+                updateStatus('Testing projects API...');
+                const response = await fetch(`${API_URL}/projects`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                updateStatus(`Projects response: ${JSON.stringify(data)}`);
+                
+                if (data.projects) {
+                    updateStatus(`Found ${data.projects.length} projects`);
+                }
+            } catch (error) {
+                updateStatus(`Projects API error: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -16,29 +16,17 @@ services:
     env_file:
       - ./backend_node/.env
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8010/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:8010}
+        - REACT_APP_API_URL=${REACT_APP_API_URL:-http://3.85.144.221:8010}
     container_name: project-manager-frontend
     ports:
       - "3005:3005"
     depends_on:
       - backend
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3005"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
